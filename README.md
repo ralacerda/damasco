@@ -8,6 +8,7 @@
 <!-- /automd -->
 
 Document based database inside SQLite.
+
 ## Usage
 
 Install package:
