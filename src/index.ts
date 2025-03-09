@@ -2,58 +2,87 @@ import { createDatabase } from "db0";
 import libSql from "db0/connectors/libsql/node";
 import { destr } from "destr";
 import { randomUUID } from "uncrypto";
+import { defu } from "defu";
 
-const db = createDatabase(libSql({ url: `file:local.db`, intMode: "string" }));
-
-// Create users table
-await db.sql`CREATE TABLE IF NOT EXISTS users (
-    "_uid" TEXT PRIMARY KEY ,
-    "content" TEXT
-  );`;
-
-type Meta = {
-  age: number;
+type CollectionConstructor = {
+  name: string;
+  db: ReturnType<typeof createDatabase>;
+  isDbReady: Promise<void>;
 };
 
-const meta: Meta = {
-  age: 30,
+class Collection {
+  private name: string;
+  private db: ReturnType<typeof createDatabase>;
+  private isTableReady: Promise<unknown>;
+
+  constructor({ db, isDbReady, name }: CollectionConstructor) {
+    // TODO: Make sure the collection name is a valid SQL identifier
+    // otherwise a sql injection could be possible with collection name
+    this.name = name;
+    this.db = db;
+
+    this.isTableReady = this.init(isDbReady);
+  }
+
+  private async init(isDbReady: Promise<void>) {
+    await isDbReady;
+    return this.db.sql`CREATE TABLE IF NOT EXISTS {${this.name}} (
+      "_uid" TEXT PRIMARY KEY ,
+      "content" TEXT
+    );`;
+  }
+
+  private async getDb() {
+    await this.isTableReady;
+    return this.db;
+  }
+
+  async add<T>(content: T) {
+    const uid = randomUUID();
+    const db = await this.getDb();
+    await db.sql`INSERT INTO {${this.name}} (_uid, content) VALUES (${uid}, ${JSON.stringify(content)})`;
+    return uid;
+  }
+
+  async get<T>(): Promise<Document<T>[]> {
+    const db = await this.getDb();
+
+    const { rows } = await db.sql`SELECT _uid, content FROM {${this.name}}`;
+
+    if (!rows) {
+      return [];
+    }
+
+    return rows.map((row) => {
+      return {
+        // @ts-expect-error _uid is not in content
+        _uid: row._uid as string,
+        ...destr(row.content),
+      };
+    });
+  }
+}
+
+type DamascoOptions = {
+  url?: string;
 };
 
-// await db.sql`INSERT INTO users VALUES ('John', 'Doe', ${JSON.stringify(meta)})`;
+const defaultOptions = {
+  url: "file:local.db",
+};
 
-console.log(await collectionAdd(meta));
+export function damasco(options?: DamascoOptions) {
+  const { url } = defu(options, defaultOptions);
 
-console.log(await collectionGet());
+  const db = createDatabase(libSql({ url, intMode: "string" }));
 
-async function collectionAdd<T>(content: T) {
-  const uid = randomUUID();
-  await db.sql`INSERT INTO users (_uid, content) VALUES (${uid}, ${JSON.stringify(content)})`;
-  return uid;
-}
+  const isDbReady = new Promise<void>((resolver) => resolver());
 
-async function docGet<T>(uid: string): Promise<T | null> {
-  const { rows } = await db.sql`SELECT content FROM users WHERE _uid = ${uid}`;
-
-  if (!rows || !rows.length || !rows[0]?.content) {
-    return null;
-  }
-
-  return destr(rows[0].content);
-}
-
-async function collectionGet<T>(): Promise<Document<T>[]> {
-  const { rows } = await db.sql`SELECT _uid, content FROM users`;
-
-  if (!rows) {
-    return [];
-  }
-
-  return rows.map((row) => {
-    return {
-      _uid: row._uid as string,
-      content: destr(row.content),
-    };
-  });
+  return {
+    collection(name: string) {
+      return new Collection({ name, db, isDbReady });
+    },
+  };
 }
 
 type Document<T> = {
