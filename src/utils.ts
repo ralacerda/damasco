@@ -10,3 +10,16 @@ export function parseDocument(document: DamascoRow) {
     ...(destr(document.content) as {}),
   };
 }
+
+export function stringyDocument(data: { [key: string]: unknown }) {
+  return Object.entries(data).reduce((acc, [key, value]) => {
+    if (key === "_uid") {
+      return acc;
+    }
+
+    return {
+      ...acc,
+      [key]: JSON.stringify(value),
+    };
+  }, {});
+}
