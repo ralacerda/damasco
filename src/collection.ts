@@ -49,7 +49,7 @@ export class Collection {
     });
   }
 
-  async get<T>(): Promise<DocumentData<T>[]> {
+  async get(): Promise<DocumentData[]> {
     const db = await this.getDb();
 
     const { rows } = await db.sql`SELECT _uid, content FROM {${this.name}}`;
@@ -58,6 +58,6 @@ export class Collection {
       return [];
     }
 
-    return rows.map(parseDocument);
+    return rows.map((row) => parseDocument(row));
   }
 }

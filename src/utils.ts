@@ -7,19 +7,20 @@ type DamascoRow = {
 export function parseDocument(document: DamascoRow) {
   return {
     _uid: document._uid as string,
-    ...(destr(document.content) as {}),
+    ...(destr(document.content) as object),
   };
 }
 
 export function stringyDocument(data: { [key: string]: unknown }) {
-  return Object.entries(data).reduce((acc, [key, value]) => {
+  const result: { [key: string]: string } = {};
+
+  for (const [key, value] of Object.entries(data)) {
     if (key === "_uid") {
-      return acc;
+      continue;
     }
 
-    return {
-      ...acc,
-      [key]: JSON.stringify(value),
-    };
-  }, {});
+    result[key] = JSON.stringify(value);
+  }
+
+  return result;
 }
