@@ -1,6 +1,5 @@
 import { randomUUID } from "uncrypto";
 import type { Database, DocumentData } from "./types";
-import destr from "destr";
 import { parseDocument } from "./utils";
 import { Document } from "./document";
 
