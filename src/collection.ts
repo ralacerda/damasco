@@ -1,7 +1,8 @@
 import { randomUUID } from "uncrypto";
-import type { Database, Document } from "./types";
+import type { Database, DocumentData } from "./types";
 import destr from "destr";
 import { parseDocument } from "./utils";
+import { Document } from "./document";
 
 type CollectionConstructor = {
   name: string;
@@ -41,7 +42,15 @@ export class Collection {
     return uid;
   }
 
-  async get<T>(): Promise<Document<T>[]> {
+  document(uid: string) {
+    return new Document({
+      _uid: uid,
+      collection: this.name,
+      getDb: this.getDb.bind(this),
+    });
+  }
+
+  async get<T>(): Promise<DocumentData<T>[]> {
     const db = await this.getDb();
 
     const { rows } = await db.sql`SELECT _uid, content FROM {${this.name}}`;

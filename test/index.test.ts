@@ -18,6 +18,33 @@ describe("collections", () => {
   });
 });
 
+describe("document", () => {
+  it("can get a document", async () => {
+    const db = createDamascoOnMemory();
+    const collection = db.collection("myCollection");
+
+    const uid = await collection.add({ name: "John", age: 30 });
+    const document = collection.document(uid);
+
+    const data = await document.get();
+
+    expect(data).toEqual({ _uid: uid, name: "John", age: 30 });
+  });
+
+  it("can set a document", async () => {
+    const db = createDamascoOnMemory();
+    const collection = db.collection("myCollection");
+
+    const uid = await collection.add({ name: "John", age: 30 });
+    const document = collection.document(uid);
+
+    await document.set({ name: "Jane", age: 31 });
+    const data = await document.get();
+
+    expect(data).toEqual({ _uid: uid, name: "Jane", age: 31 });
+  });
+});
+
 describe("parser", () => {
   it("correctly parse a JSON with content and _uid", () => {
     const data = {

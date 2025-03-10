@@ -1,4 +1,3 @@
-import type { Document } from "./types";
 import destr from "destr";
 
 type DamascoRow = {
