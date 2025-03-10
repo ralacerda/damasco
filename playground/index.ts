@@ -1,7 +1,7 @@
 import { damasco } from "../src/index";
 
 console.log("starting damasco");
-const db = damasco();
+const db = damasco({ url: "file:local.db" });
 
 console.log("getting the mycollection collection");
 const collection = db.collection("myCollection");
