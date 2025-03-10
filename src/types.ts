@@ -4,5 +4,5 @@ export type Database = ReturnType<typeof createDatabase>;
 
 export type Document<T> = {
   _uid: string;
-  content: T;
+  [key: string]: any;
 };

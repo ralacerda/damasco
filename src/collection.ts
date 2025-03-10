@@ -1,37 +1,36 @@
 import { randomUUID } from "uncrypto";
 import type { Database, Document } from "./types";
 import destr from "destr";
+import { parseDocument } from "./utils";
 
 type CollectionConstructor = {
   name: string;
   db: Database;
-  isDbReady: Promise<void>;
 };
 
 export class Collection {
   private name: string;
   private db: Database;
-  private isTableReady: Promise<unknown>;
+  private isTableReady: boolean = false;
 
-  constructor({ db, isDbReady, name }: CollectionConstructor) {
+  constructor({ db, name }: CollectionConstructor) {
     // TODO: Make sure the collection name is a valid SQL identifier
     // otherwise a sql injection could be possible with collection name
     this.name = name;
     this.db = db;
-
-    this.isTableReady = this.init(isDbReady);
-  }
-
-  private async init(isDbReady: Promise<void>) {
-    await isDbReady;
-    return this.db.sql`CREATE TABLE IF NOT EXISTS {${this.name}} (
-      "_uid" TEXT PRIMARY KEY ,
-      "content" TEXT
-    );`;
   }
 
   private async getDb() {
-    await this.isTableReady;
+    if (this.isTableReady) {
+      return this.db;
+    }
+
+    await this.db.sql`CREATE TABLE IF NOT EXISTS {${this.name}} (
+      "_uid" TEXT PRIMARY KEY ,
+      "content" TEXT
+      );`;
+
+    this.isTableReady = true;
     return this.db;
   }
 
@@ -51,12 +50,6 @@ export class Collection {
       return [];
     }
 
-    return rows.map((row) => {
-      return {
-        // @ts-expect-error _uid is not in content
-        _uid: row._uid as string,
-        ...destr(row.content),
-      };
-    });
+    return rows.map(parseDocument);
   }
 }

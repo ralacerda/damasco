@@ -9,11 +9,9 @@ type DamascoOptions = {
 export function damasco(options: DamascoOptions) {
   const db = createDatabase(libSql({ url: options.url, intMode: "string" }));
 
-  const isDbReady = new Promise<void>((resolver) => resolver());
-
   return {
     collection(name: string) {
-      return new Collection({ name, db, isDbReady });
+      return new Collection({ name, db });
     },
   };
 }
