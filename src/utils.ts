@@ -1,4 +1,5 @@
 import destr from "destr";
+import type { AllowedValue } from "./types";
 
 type DamascoRow = {
   [key: string]: any;
@@ -11,7 +12,7 @@ export function parseDocument(document: DamascoRow) {
   };
 }
 
-export function stringyDocument(data: { [key: string]: unknown }) {
+export function stringyDocument(data: { [key: string]: AllowedValue }) {
   const result: { [key: string]: string } = {};
 
   for (const [key, value] of Object.entries(data)) {
