@@ -11,6 +11,5 @@ export type AllowedValue =
   | string
   | boolean
   | number
-  | bigint
   | AllowedValue[]
   | { [key: string]: AllowedValue };
