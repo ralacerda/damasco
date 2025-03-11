@@ -1,5 +1,5 @@
 import type { createDatabase } from "db0";
-import type { CustomTypes } from "./customTypes";
+import type { CustomTypes } from "./custom-types";
 
 export type Database = ReturnType<typeof createDatabase>;
 
