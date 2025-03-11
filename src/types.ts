@@ -1,4 +1,5 @@
 import type { createDatabase } from "db0";
+import type { CustomTypes } from "./customTypes";
 
 export type Database = ReturnType<typeof createDatabase>;
 
@@ -12,4 +13,11 @@ export type AllowedValue =
   | boolean
   | number
   | AllowedValue[]
-  | { [key: string]: AllowedValue };
+  | DamascoCustom<keyof CustomTypes>
+  | { [key: string]: AllowedValue; __type: never; __value: never };
+
+export type DamascoCustom<T extends keyof CustomTypes> = {
+  __type: T;
+  __value: ReturnType<CustomTypes[T]["parse"]>;
+  get value(): ReturnType<CustomTypes[T]["parse"]>;
+};

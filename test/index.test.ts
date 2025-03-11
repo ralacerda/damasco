@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { damasco } from "../src";
-import { parseDocument } from "../src/utils";
+import { parseDocument, stringyDocument } from "../src/utils";
 
 function createDamascoOnMemory() {
   return damasco({ url: ":memory:" });
@@ -53,5 +53,20 @@ describe("parser", () => {
     };
 
     expect(parseDocument(data)).toEqual({ _uid: "123", name: "John", age: 30 });
+  });
+});
+
+describe("stringyDocument", () => {
+  it("correctly stringy a document", () => {
+    const data = {
+      _uid: "123",
+      name: "John",
+      age: 30,
+    };
+
+    expect(stringyDocument(data)).toEqual({
+      name: JSON.stringify("John"),
+      age: JSON.stringify(30),
+    });
   });
 });
