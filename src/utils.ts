@@ -13,14 +13,14 @@ export function parseDocument(document: DamascoRow) {
 }
 
 export function formatDocument(data: { [key: string | number]: AllowedValue }) {
-  const result: { [key: string]: string | number } = {};
+  const result: { [key: string]: AllowedValue } = {};
 
   for (const [key, value] of Object.entries(data)) {
     if (key === "_uid") {
       continue;
     }
 
-    result[key] = JSON.stringify(value);
+    result[key] = value;
   }
 
   return result;

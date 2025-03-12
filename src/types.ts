@@ -12,4 +12,4 @@ export type AllowedValue =
   | boolean
   | number
   | AllowedValue[]
-  | { [key: string]: AllowedValue; __type: never; __value: never };
+  | { [key: string]: AllowedValue };
