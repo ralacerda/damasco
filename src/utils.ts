@@ -1,6 +1,5 @@
 import destr from "destr";
 import type { AllowedValue } from "./types";
-import { customTypes } from "./custom-types";
 
 type DamascoRow = {
   [key: string]: any;
@@ -19,11 +18,6 @@ export function formatDocument(data: { [key: string | number]: AllowedValue }) {
   for (const [key, value] of Object.entries(data)) {
     if (key === "_uid") {
       continue;
-    }
-
-    if (value instanceof Object && "__type" in value) {
-      const customType = customTypes[value.__type];
-      result[key] = customType.format(value.__value);
     }
 
     result[key] = JSON.stringify(value);

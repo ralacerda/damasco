@@ -57,7 +57,7 @@ describe("parser", () => {
 });
 
 describe("formatDocument", () => {
-  it("correctly format the document", () => {
+  it("correctly format basic documents", () => {
     const data = {
       _uid: "123",
       name: "John",
@@ -65,8 +65,8 @@ describe("formatDocument", () => {
     };
 
     expect(formatDocument(data)).toEqual({
-      name: JSON.stringify("John"),
-      age: JSON.stringify(30),
+      name: "John",
+      age: 30,
     });
   });
 });
