@@ -1,24 +1,20 @@
 {
-  "name": "packageName",
+  "name": "damasco",
   "version": "0.0.0",
   "description": "",
-  "repository": "unjs/packageName",
+  "repository": "ralacerda/damasco",
   "license": "MIT",
   "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/index.d.mts",
+        "types": "./dist/index.d.ts",
         "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
       }
     }
   },
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
