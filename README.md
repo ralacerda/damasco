@@ -35,31 +35,10 @@ bun install packageName
 deno install packageName
 ```
 
-<!-- /automd -->
+## RoadMap
 
-Import:
-
-<!-- automd:jsimport cjs cdn name="pkg" -->
-
-**ESM** (Node.js, Bun, Deno)
-
-```js
-import {} from "pkg";
-```
-
-**CommonJS** (Legacy Node.js)
-
-```js
-const {} = require("pkg");
-```
-
-**CDN** (Deno, Bun and Browsers)
-
-```js
-import {} from "https://esm.sh/pkg";
-```
-
-<!-- /automd -->
+[ ] Documentation
+[ ] Queries
 
 ## Development
 
