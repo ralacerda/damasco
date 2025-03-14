@@ -7,22 +7,16 @@ type DocumentConstructor = {
   getDb: () => Promise<Database>;
 };
 
-export class Document {
-  private _uid: string;
-  private collection: string;
-  getDb: () => Promise<Database>;
-
-  constructor({ _uid, collection, getDb }: DocumentConstructor) {
-    this._uid = _uid;
-    this.collection = collection;
-    this.getDb = getDb;
-  }
-
-  async get() {
-    const db = await this.getDb();
+export function createDocument({
+  _uid,
+  collection,
+  getDb,
+}: DocumentConstructor) {
+  async function get() {
+    const db = await getDb();
 
     const { rows } =
-      await db.sql`SELECT _uid, content FROM {${this.collection}} WHERE _uid = ${this._uid}`;
+      await db.sql`SELECT _uid, content FROM {${collection}} WHERE _uid = ${_uid}`;
 
     if (!rows || !rows[0]) {
       throw new Error("Document not found");
@@ -31,8 +25,20 @@ export class Document {
     return parseDocument(rows[0]);
   }
 
-  async set<T>(content: T) {
-    const db = await this.getDb();
-    await db.sql`UPDATE {${this.collection}} SET content = ${JSON.stringify(content)} WHERE _uid = ${this._uid}`;
+  async function set<T>(content: T) {
+    const db = await getDb();
+    const result = await db.sql`
+      INSERT INTO {${collection}} (_uid, content) 
+      VALUES (${_uid}, ${JSON.stringify(content)})
+      ON CONFLICT (_uid) 
+      DO UPDATE SET content = ${JSON.stringify(content)}
+    `;
+
+    return result;
   }
+
+  return {
+    get,
+    set,
+  };
 }

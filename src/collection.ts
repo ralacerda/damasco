@@ -1,58 +1,47 @@
 import { randomUUID } from "uncrypto";
 import type { Database, DocumentData } from "./types";
 import { parseDocument } from "./utils";
-import { Document } from "./document";
+import { createDocument } from "./document";
 
 type CollectionConstructor = {
   name: string;
   db: Database;
 };
 
-export class Collection {
-  private name: string;
-  private db: Database;
-  private isTableReady: boolean = false;
+export function createCollection({
+  name,
+  db: initialDb,
+}: CollectionConstructor) {
+  let db: Database | undefined = undefined;
 
-  constructor({ db, name }: CollectionConstructor) {
-    // TODO: Make sure the collection name is a valid SQL identifier
-    // otherwise a sql injection could be possible with collection name
-    this.name = name;
-    this.db = db;
-  }
-
-  private async getDb() {
-    if (this.isTableReady) {
-      return this.db;
-    }
-
-    await this.db.sql`CREATE TABLE IF NOT EXISTS {${this.name}} (
+  async function initializeDb() {
+    await initialDb.sql`CREATE TABLE IF NOT EXISTS {${name}} (
       "_uid" TEXT PRIMARY KEY ,
       "content" TEXT
       );`;
 
-    this.isTableReady = true;
-    return this.db;
+    return initialDb;
   }
 
-  async add<T>(content: T) {
+  async function getDb() {
+    if (!db) {
+      db = await initializeDb();
+    }
+
+    return db;
+  }
+
+  async function add<T>(content: T) {
     const uid = randomUUID();
-    const db = await this.getDb();
-    await db.sql`INSERT INTO {${this.name}} (_uid, content) VALUES (${uid}, ${JSON.stringify(content)})`;
+    const db = await getDb();
+    await db.sql`INSERT INTO {${name}} (_uid, content) VALUES (${uid}, ${JSON.stringify(content)})`;
     return uid;
   }
 
-  document(uid: string) {
-    return new Document({
-      _uid: uid,
-      collection: this.name,
-      getDb: this.getDb.bind(this),
-    });
-  }
+  async function get(): Promise<DocumentData[]> {
+    const db = await getDb();
 
-  async get(): Promise<DocumentData[]> {
-    const db = await this.getDb();
-
-    const { rows } = await db.sql`SELECT _uid, content FROM {${this.name}}`;
+    const { rows } = await db.sql`SELECT _uid, content FROM {${name}}`;
 
     if (!rows) {
       return [];
@@ -60,4 +49,18 @@ export class Collection {
 
     return rows.map((row) => parseDocument(row));
   }
+
+  function document(_uid: string) {
+    return createDocument({
+      _uid,
+      collection: name,
+      getDb,
+    });
+  }
+
+  return {
+    add,
+    get,
+    document,
+  };
 }

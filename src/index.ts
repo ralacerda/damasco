@@ -1,6 +1,6 @@
 import { createDatabase } from "db0";
 import libSql from "db0/connectors/libsql/node";
-import { Collection } from "./collection";
+import { createCollection } from "./collection";
 
 type DamascoOptions = {
   url: string;
@@ -11,7 +11,7 @@ export function damasco(options: DamascoOptions) {
 
   return {
     collection(name: string) {
-      return new Collection({ name, db });
+      return createCollection({ name, db });
     },
   };
 }
