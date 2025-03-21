@@ -1,13 +1,13 @@
-import { damasco } from "../src/index";
+import { damasco, addDoc, collection, getDocs } from "../src/index";
 
 console.log("starting damasco");
 const db = damasco({ url: "file:local.db" });
 
-console.log("getting the mycollection collection");
-const collection = db.collection("myCollection");
+console.log("getting the users collection");
+const users = collection(db, "users");
 
 console.log("adding a new document to the collection");
-await collection.add({
+await addDoc(users, {
   name: "John",
   age: 30,
   lastLogin: new Date(),
@@ -15,6 +15,6 @@ await collection.add({
 });
 
 console.log("getting all documents from the collection");
-const data = await collection.get();
+const data = await getDocs(users);
 
 console.log(data);

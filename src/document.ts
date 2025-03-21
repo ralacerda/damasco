@@ -1,44 +1,76 @@
-import type { Database } from "./types";
+import { randomUUID } from "node:crypto";
+import type { CollectionRef, DocContent, DocRef } from "./types";
 import { parseDocument } from "./utils";
 
-type DocumentConstructor = {
-  _uid: string;
-  collection: string;
-  getDb: () => Promise<Database>;
-};
+export async function addDoc(collection: CollectionRef, content: object) {
+  const uid = randomUUID();
+  const db = await collection.getDb();
+  await db.connector
+    .sql`INSERT INTO {${collection.name}} (_uid, content) VALUES (${uid}, ${JSON.stringify(content)})`;
+  return uid;
+}
 
-export function createDocument({
-  _uid,
-  collection,
-  getDb,
-}: DocumentConstructor) {
-  async function get() {
-    const db = await getDb();
-
-    const { rows } =
-      await db.sql`SELECT _uid, content FROM {${collection}} WHERE _uid = ${_uid}`;
-
-    if (!rows || !rows[0]) {
-      throw new Error("Document not found");
-    }
-
-    return parseDocument(rows[0]);
-  }
-
-  async function set<T>(content: T) {
-    const db = await getDb();
-    const result = await db.sql`
-      INSERT INTO {${collection}} (_uid, content) 
-      VALUES (${_uid}, ${JSON.stringify(content)})
-      ON CONFLICT (_uid) 
-      DO UPDATE SET content = ${JSON.stringify(content)}
-    `;
-
-    return result;
-  }
-
+export function doc(collectionRef: CollectionRef, uid: string): DocRef {
   return {
-    get,
-    set,
+    collection: collectionRef,
+    uid,
   };
+}
+
+export async function deleteDoc(docRef: DocRef) {
+  const db = await docRef.collection.getDb();
+  const { rows } = await db.connector.sql`
+    DELETE FROM {${docRef.collection.name}} WHERE _uid = ${docRef.uid}
+  `;
+  if (!rows || !rows[0]) {
+    throw new Error("Document not found");
+  }
+  return parseDocument(rows[0]);
+}
+
+export async function deleteDocs(collectionRef: CollectionRef) {
+  const db = await collectionRef.getDb();
+  const { rows } = await db.connector.sql`
+    DELETE FROM {${collectionRef.name}}
+  `;
+  if (!rows || !rows[0]) {
+    throw new Error("No documents found");
+  }
+  return rows.map((row) => parseDocument(row));
+}
+
+export async function updateDoc(docRef: DocRef, content: DocContent) {
+  const db = await docRef.collection.getDb();
+  const { rows } = await db.connector.sql`
+    UPDATE {${docRef.collection.name}} SET content = ${JSON.stringify(content)} WHERE _uid = ${docRef.uid}
+  `;
+  if (!rows || !rows[0]) {
+    throw new Error("Document not found");
+  }
+  return parseDocument(rows[0]);
+}
+
+export async function getDocs(collectionRef: CollectionRef) {
+  const db = await collectionRef.getDb();
+  const { rows } = await db.connector.sql`
+    SELECT _uid, content FROM {${collectionRef.name}}
+  `;
+  if (!rows || !rows[0]) {
+    throw new Error("No documents found");
+  }
+  return rows.map((row) => parseDocument(row));
+}
+
+export async function getDoc(collectionRef: CollectionRef, uid: string) {
+  const db = await collectionRef.getDb();
+
+  const { rows } = await db.connector.sql`
+    SELECT _uid, content FROM {${collectionRef.name}} WHERE _uid = ${uid}
+  `;
+
+  if (!rows || !rows[0]) {
+    throw new Error("Document not found");
+  }
+
+  return parseDocument(rows[0]);
 }

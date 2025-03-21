@@ -39,6 +39,8 @@ deno install packageName
 
 [ ] Documentation
 [ ] Queries
+[ ] Custom Types
+[ ] Metadata as extra columns
 
 ## Development
 
