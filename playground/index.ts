@@ -1,5 +1,5 @@
 import { collection } from "../src/collection";
-import { addDoc, getDocs, getDoc } from "../src/document";
+import { addDoc, getDoc } from "../src/document";
 import { damasco } from "../src/index";
 
 console.log("starting damasco");
