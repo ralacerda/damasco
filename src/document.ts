@@ -19,35 +19,30 @@ export function doc(collectionRef: CollectionRef, uid: string): DocRef {
 
 export async function deleteDoc(docRef: DocRef) {
   const db = await docRef.collection.getDb();
-  const { rows } = await db.connector.sql`
+  const { success } = await db.connector.sql`
     DELETE FROM {${docRef.collection.name}} WHERE _uid = ${docRef.uid}
   `;
-  if (!rows || !rows[0]) {
-    throw new Error("Document not found");
-  }
-  return parseDocument(rows[0]);
+
+  return success;
 }
 
 export async function deleteDocs(collectionRef: CollectionRef) {
   const db = await collectionRef.getDb();
-  const { rows } = await db.connector.sql`
+  const { success } = await db.connector.sql`
     DELETE FROM {${collectionRef.name}}
   `;
-  if (!rows || !rows[0]) {
-    throw new Error("No documents found");
-  }
-  return rows.map((row) => parseDocument(row));
+
+  return success;
 }
 
 export async function updateDoc(docRef: DocRef, content: DocContent) {
   const db = await docRef.collection.getDb();
-  const { rows } = await db.connector.sql`
+
+  const { success } = await db.connector.sql`
     UPDATE {${docRef.collection.name}} SET content = ${JSON.stringify(content)} WHERE _uid = ${docRef.uid}
   `;
-  if (!rows || !rows[0]) {
-    throw new Error("Document not found");
-  }
-  return parseDocument(rows[0]);
+
+  return success;
 }
 
 export async function getDocs(collectionRef: CollectionRef) {
@@ -55,7 +50,7 @@ export async function getDocs(collectionRef: CollectionRef) {
   const { rows } = await db.connector.sql`
     SELECT _uid, content FROM {${collectionRef.name}}
   `;
-  if (!rows || !rows[0]) {
+  if (!rows) {
     throw new Error("No documents found");
   }
   return rows.map((row) => parseDocument(row));

@@ -35,7 +35,7 @@ describe("collections", () => {
     const document = await getDoc(collectionRef, id);
 
     expect(document._uid).toBe(id);
-    expect(document).toContain({ name: "John Doe" });
+    expect(document).toMatchObject({ name: "John Doe" });
   });
 
   it("can create document reference and use it", async () => {
@@ -59,7 +59,7 @@ describe("collections", () => {
     await updateDoc(docRef, { name: "John Smith", age: 31 });
     const updated = await getDoc(collectionRef, id);
 
-    expect(updated).toContain({ name: "John Smith", age: 31 });
+    expect(updated).toMatchObject({ name: "John Smith", age: 31 });
   });
 
   it("can delete a specific document", async () => {
