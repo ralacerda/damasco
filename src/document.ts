@@ -51,8 +51,9 @@ export async function getDocs(collectionRef: CollectionRef) {
     SELECT _uid, content FROM {${collectionRef.name}}
   `;
   if (!rows) {
-    throw new Error("No documents found");
+    return [];
   }
+
   return rows.map((row) => parseDocument(row));
 }
 
@@ -64,7 +65,7 @@ export async function getDoc(collectionRef: CollectionRef, uid: string) {
   `;
 
   if (!rows || !rows[0]) {
-    throw new Error("Document not found");
+    return undefined;
   }
 
   return parseDocument(rows[0]);

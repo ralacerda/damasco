@@ -34,7 +34,7 @@ describe("collections", () => {
     const id = await addDoc(collectionRef, { name: "John Doe" });
     const document = await getDoc(collectionRef, id);
 
-    expect(document._uid).toBe(id);
+    expect(document?._uid).toBe(id);
     expect(document).toMatchObject({ name: "John Doe" });
   });
 
