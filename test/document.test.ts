@@ -11,6 +11,11 @@ import {
   updateDoc,
 } from "../src/document";
 
+type User = {
+  name: string;
+  age?: number;
+};
+
 function createDamascoOnMemory() {
   return damasco({ url: ":memory:" });
 }
@@ -18,7 +23,7 @@ function createDamascoOnMemory() {
 describe("collections", () => {
   it("can add documents and read all documents", async () => {
     const db = createDamascoOnMemory();
-    const collectionRef = collection(db, "test");
+    const collectionRef = collection<User>(db, "test");
 
     await addDoc(collectionRef, { name: "John Doe" });
     await addDoc(collectionRef, { name: "Jane Doe" });
@@ -29,7 +34,7 @@ describe("collections", () => {
 
   it("can get a specific document by id", async () => {
     const db = createDamascoOnMemory();
-    const collectionRef = collection(db, "test");
+    const collectionRef = collection<User>(db, "test");
 
     const id = await addDoc(collectionRef, { name: "John Doe" });
     const document = await getDoc(collectionRef, id);
@@ -40,7 +45,7 @@ describe("collections", () => {
 
   it("can create document reference and use it", async () => {
     const db = createDamascoOnMemory();
-    const collectionRef = collection(db, "test");
+    const collectionRef = collection<User>(db, "test");
 
     const id = await addDoc(collectionRef, { name: "John Doe" });
     const docRef = doc(collectionRef, id);
@@ -51,7 +56,7 @@ describe("collections", () => {
 
   it("can update a document", async () => {
     const db = createDamascoOnMemory();
-    const collectionRef = collection(db, "test");
+    const collectionRef = collection<User>(db, "test");
 
     const id = await addDoc(collectionRef, { name: "John Doe", age: 30 });
     const docRef = doc(collectionRef, id);
@@ -64,7 +69,7 @@ describe("collections", () => {
 
   it("can delete a specific document", async () => {
     const db = createDamascoOnMemory();
-    const collectionRef = collection(db, "test");
+    const collectionRef = collection<User>(db, "test");
 
     const id1 = await addDoc(collectionRef, { name: "John Doe" });
     const id2 = await addDoc(collectionRef, { name: "Jane Doe" });
@@ -79,7 +84,7 @@ describe("collections", () => {
 
   it("can delete all documents in a collection", async () => {
     const db = createDamascoOnMemory();
-    const collectionRef = collection(db, "test");
+    const collectionRef = collection<User>(db, "test");
 
     await addDoc(collectionRef, { name: "John Doe" });
     await addDoc(collectionRef, { name: "Jane Doe" });

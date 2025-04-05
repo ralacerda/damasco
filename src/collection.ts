@@ -1,9 +1,9 @@
-import type { CollectionRef, DamascoDb } from "./types";
+import type { CollectionRef, DamascoDb, AllowedValue } from "./types";
 
-export function collection(
+export function collection<T extends Record<string, AllowedValue>>(
   db: DamascoDb,
   collectionName: string,
-): CollectionRef {
+): CollectionRef<T> {
   let isTableReady = false;
 
   async function getDb() {

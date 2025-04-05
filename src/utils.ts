@@ -1,14 +1,14 @@
 import destr from "destr";
-import type { AllowedValue } from "./types";
+import type { AllowedValue, DamascoDocument } from "./types";
 
 type DamascoRow = {
   [key: string]: any;
 };
 
-export function parseDocument(document: DamascoRow) {
+export function parseDocument<T>(document: DamascoRow): DamascoDocument<T> {
   return {
     _uid: document._uid as string,
-    ...(destr(document.content) as object),
+    ...destr<T>(document.content),
   };
 }
 

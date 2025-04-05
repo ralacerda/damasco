@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
-import type { CollectionRef, DocContent, DocRef } from "./types";
+import type { CollectionRef, DocContent, DocRef, DocumentData } from "./types";
 import { parseDocument } from "./utils";
 
-export async function addDoc(collection: CollectionRef, content: object) {
+export async function addDoc<T>(collection: CollectionRef<T>, content: T) {
   const uid = randomUUID();
   const db = await collection.getDb();
   await db.connector
@@ -10,14 +10,17 @@ export async function addDoc(collection: CollectionRef, content: object) {
   return uid;
 }
 
-export function doc(collectionRef: CollectionRef, uid: string): DocRef {
+export function doc<T>(
+  collectionRef: CollectionRef<T>,
+  uid: string,
+): DocRef<T> {
   return {
     collection: collectionRef,
     uid,
   };
 }
 
-export async function deleteDoc(docRef: DocRef) {
+export async function deleteDoc<T>(docRef: DocRef<T>) {
   const db = await docRef.collection.getDb();
   const { success } = await db.connector.sql`
     DELETE FROM {${docRef.collection.name}} WHERE _uid = ${docRef.uid}
@@ -26,7 +29,7 @@ export async function deleteDoc(docRef: DocRef) {
   return success;
 }
 
-export async function deleteDocs(collectionRef: CollectionRef) {
+export async function deleteDocs<T>(collectionRef: CollectionRef<T>) {
   const db = await collectionRef.getDb();
   const { success } = await db.connector.sql`
     DELETE FROM {${collectionRef.name}}
@@ -35,7 +38,7 @@ export async function deleteDocs(collectionRef: CollectionRef) {
   return success;
 }
 
-export async function updateDoc(docRef: DocRef, content: DocContent) {
+export async function updateDoc<T>(docRef: DocRef<T>, content: DocContent) {
   const db = await docRef.collection.getDb();
 
   const { success } = await db.connector.sql`
@@ -45,7 +48,9 @@ export async function updateDoc(docRef: DocRef, content: DocContent) {
   return success;
 }
 
-export async function getDocs(collectionRef: CollectionRef) {
+export async function getDocs<T>(
+  collectionRef: CollectionRef<T>,
+): Promise<DocumentData<T>[]> {
   const db = await collectionRef.getDb();
   const { rows } = await db.connector.sql`
     SELECT _uid, content FROM {${collectionRef.name}}
@@ -57,7 +62,10 @@ export async function getDocs(collectionRef: CollectionRef) {
   return rows.map((row) => parseDocument(row));
 }
 
-export async function getDoc(collectionRef: CollectionRef, uid: string) {
+export async function getDoc<T>(
+  collectionRef: CollectionRef<T>,
+  uid: string,
+): Promise<DocumentData<T> | undefined> {
   const db = await collectionRef.getDb();
 
   const { rows } = await db.connector.sql`
