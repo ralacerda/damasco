@@ -12,10 +12,10 @@ console.log("starting damasco");
 const db = damasco({ url: "file:local.db" });
 
 console.log("gettingthe users collection");
-const users = collection<User>(db, "users");
+const users = collection(db, "users");
 
 console.log("adding a new document to the collection");
-const johnId = await addDoc(users, {
+const johnId = await addDoc<User>(users, {
   name: "John",
   age: 30,
   new: true,
