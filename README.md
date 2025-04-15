@@ -1,11 +1,8 @@
 # Damasco
 
-<!-- automd:badges color=yellow -->
+[![npm version](https://img.shields.io/npm/v/damasco-db?color=yellow)](https://npmjs.com/package/damasco-db)
 
-[![npm version](https://img.shields.io/npm/v/packageName?color=yellow)](https://npmjs.com/package/packageName)
-[![npm downloads](https://img.shields.io/npm/dm/packageName?color=yellow)](https://npm.chart.dev/packageName)
-
-<!-- /automd -->
+<!-- [![npm downloads](https://img.shields.io/npm/dm/packageName?color=yellow)](https://npm.chart.dev/packageName) -->
 
 Document based database inside SQLite.
 
@@ -13,26 +10,13 @@ Document based database inside SQLite.
 
 Install package:
 
-<!-- automd:pm-install -->
-
 ```sh
-# ✨ Auto-detect
-npx nypm install packageName
-
 # npm
-npm install packageName
-
-# yarn
-yarn add packageName
-
-# pnpm
-pnpm install packageName
-
-# bun
-bun install packageName
-
-# deno
-deno install packageName
+npm install damasco-db
+yarn add damasco-db
+pnpm install damasco-db
+bun install damasco-db
+deno install damasco-db
 ```
 
 ## RoadMap
@@ -55,24 +39,3 @@ deno install packageName
 - Run interactive tests using `pnpm dev`
 
 </details>
-
-## License
-
-<!-- automd:contributors license=MIT -->
-
-Published under the [MIT](https://github.com/unjs/packageName/blob/main/LICENSE) license.
-Made by [community](https://github.com/unjs/packageName/graphs/contributors) 💛
-<br><br>
-<a href="https://github.com/unjs/packageName/graphs/contributors">
-<img src="https://contrib.rocks/image?repo=unjs/packageName" />
-</a>
-
-<!-- /automd -->
-
-<!-- automd:with-automd -->
-
----
-
-_🤖 auto updated with [automd](https://automd.unjs.io)_
-
-<!-- /automd -->
