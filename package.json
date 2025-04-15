@@ -47,8 +47,7 @@
   "dependencies": {
     "@libsql/client": "^0.14.0",
     "db0": "^0.3.1",
-    "defu": "^6.1.4",
-    "destr": "^2.0.3",
+    "devalue": "^5.1.1",
     "uncrypto": "^0.1.3"
   }
 }

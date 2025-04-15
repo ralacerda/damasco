@@ -7,10 +7,6 @@ export type DamascoDb = {
   connector: Database<Connector<Client>>;
 };
 
-export type CollectionSchema = {
-  [key: string]: AllowedValue;
-};
-
 export type DamascoDocument<T> = T & {
   _uid: string;
 };
@@ -29,14 +25,3 @@ export type DocRef<T> = {
 export type DocumentData<T> = T & {
   _uid: string;
 };
-
-export type DocContent = {
-  [key: string]: AllowedValue;
-};
-
-export type AllowedValue =
-  | string
-  | boolean
-  | number
-  | AllowedValue[]
-  | { [key: string]: AllowedValue };

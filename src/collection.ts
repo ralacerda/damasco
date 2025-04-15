@@ -1,6 +1,6 @@
-import type { CollectionRef, DamascoDb, CollectionSchema } from "./types";
+import type { CollectionRef, DamascoDb } from "./types";
 
-export function collection<T extends CollectionSchema = any>(
+export function collection<T = any>(
   db: DamascoDb,
   collectionName: string,
 ): CollectionRef<T> {

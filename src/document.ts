@@ -1,25 +1,16 @@
 import { randomUUID } from "node:crypto";
-import type {
-  CollectionRef,
-  DocContent,
-  DocRef,
-  DocumentData,
-  CollectionSchema,
-} from "./types";
-import { parseDocument } from "./utils";
+import type { CollectionRef, DocRef, DocumentData } from "./types";
+import { parseDocument, stringifyDocument } from "./utils";
 
-export async function addDoc<T extends CollectionSchema>(
-  collection: CollectionRef<T>,
-  content: T,
-) {
+export async function addDoc<T>(collection: CollectionRef<T>, content: T) {
   const uid = randomUUID();
   const db = await collection.getDb();
   await db.connector
-    .sql`INSERT INTO {${collection.name}} (_uid, content) VALUES (${uid}, ${JSON.stringify(content)})`;
+    .sql`INSERT INTO {${collection.name}} (_uid, content) VALUES (${uid}, ${stringifyDocument(content)})`;
   return uid;
 }
 
-export function doc<T extends CollectionSchema>(
+export function doc<T>(
   collectionRef: CollectionRef<T>,
   uid: string,
 ): DocRef<T> {
@@ -29,7 +20,7 @@ export function doc<T extends CollectionSchema>(
   };
 }
 
-export async function deleteDoc<T extends CollectionSchema>(docRef: DocRef<T>) {
+export async function deleteDoc<T>(docRef: DocRef<T>) {
   const db = await docRef.collection.getDb();
   const { success } = await db.connector.sql`
     DELETE FROM {${docRef.collection.name}} WHERE _uid = ${docRef.uid}
@@ -38,9 +29,7 @@ export async function deleteDoc<T extends CollectionSchema>(docRef: DocRef<T>) {
   return success;
 }
 
-export async function deleteDocs<T extends CollectionSchema>(
-  collectionRef: CollectionRef<T>,
-) {
+export async function deleteDocs<T>(collectionRef: CollectionRef<T>) {
   const db = await collectionRef.getDb();
   const { success } = await db.connector.sql`
     DELETE FROM {${collectionRef.name}}
@@ -49,20 +38,17 @@ export async function deleteDocs<T extends CollectionSchema>(
   return success;
 }
 
-export async function updateDoc<T extends CollectionSchema>(
-  docRef: DocRef<T>,
-  content: DocContent,
-) {
+export async function updateDoc<T>(docRef: DocRef<T>, content: T) {
   const db = await docRef.collection.getDb();
 
   const { success } = await db.connector.sql`
-    UPDATE {${docRef.collection.name}} SET content = ${JSON.stringify(content)} WHERE _uid = ${docRef.uid}
+    UPDATE {${docRef.collection.name}} SET content = ${stringifyDocument(content)} WHERE _uid = ${docRef.uid}
   `;
 
   return success;
 }
 
-export async function getDocs<T extends CollectionSchema>(
+export async function getDocs<T>(
   collectionRef: CollectionRef<T>,
 ): Promise<DocumentData<T>[]> {
   const db = await collectionRef.getDb();
@@ -76,7 +62,7 @@ export async function getDocs<T extends CollectionSchema>(
   return rows.map((row) => parseDocument(row));
 }
 
-export async function getDoc<T extends CollectionSchema>(
+export async function getDoc<T>(
   collectionRef: CollectionRef<T>,
   uid: string,
 ): Promise<DocumentData<T> | undefined> {

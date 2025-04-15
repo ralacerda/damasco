@@ -1,5 +1,5 @@
-import destr from "destr";
-import type { AllowedValue, DamascoDocument } from "./types";
+import type { DamascoDocument } from "./types";
+import { parse, stringify } from "devalue";
 
 type DamascoRow = {
   [key: string]: any;
@@ -8,20 +8,12 @@ type DamascoRow = {
 export function parseDocument<T>(document: DamascoRow): DamascoDocument<T> {
   return {
     _uid: document._uid as string,
-    ...destr<T>(document.content),
+    ...(parse(document.content) as T),
   };
 }
 
-export function formatDocument(data: { [key: string | number]: AllowedValue }) {
-  const result: { [key: string]: AllowedValue } = {};
+export function stringifyDocument<T>(data: T | DamascoDocument<T>) {
+  const { _uid, ...rest } = data as any;
 
-  for (const [key, value] of Object.entries(data)) {
-    if (key === "_uid") {
-      continue;
-    }
-
-    result[key] = value;
-  }
-
-  return result;
+  return stringify(rest);
 }
