@@ -6,6 +6,7 @@ type User = {
   name: string;
   age: number;
   new: boolean;
+  lastSeen?: Date;
 };
 
 console.log("starting damasco");
@@ -19,13 +20,12 @@ const johnId = await addDoc<User>(users, {
   name: "John",
   age: 30,
   new: true,
+  lastSeen: new Date(),
 });
 
 console.log(johnId);
 
-console.log("getting all documents from the collection");
-// const data = await getDocs(users);
-const john = await getDoc(users, johnId);
+const john = await getDoc<User>(users, johnId);
 
 console.log(john);
 // console.log(data);
