@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomUUID } from "uncrypto";
 import type { CollectionRef, DocRef, DocumentData } from "./types";
 import { parseDocument, stringifyDocument } from "./utils";
 
