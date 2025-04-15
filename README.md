@@ -15,8 +15,6 @@ Install package:
 npm install damasco-db
 yarn add damasco-db
 pnpm install damasco-db
-bun install damasco-db
-deno install damasco-db
 ```
 
 ## RoadMap
