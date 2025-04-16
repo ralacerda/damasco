@@ -13,6 +13,8 @@ export function collection<T = any>(
 
     await db.connector.sql`CREATE TABLE IF NOT EXISTS {${collectionName}} (
       "_uid" TEXT PRIMARY KEY ,
+      "_createdAt" TEXT DEFAULT CURRENT_TIMESTAMP,
+      "_updatedAt" TEXT DEFAULT CURRENT_TIMESTAMP,
       "content" TEXT
       );`;
 

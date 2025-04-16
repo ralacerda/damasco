@@ -6,7 +6,7 @@ export async function addDoc<T>(collection: CollectionRef<T>, content: T) {
   const uid = randomUUID();
   const db = await collection.getDb();
   await db.connector
-    .sql`INSERT INTO {${collection.name}} (_uid, content) VALUES (${uid}, ${stringifyDocument(content)})`;
+    .sql`INSERT INTO {${collection.name}} (_uid, content, _createdAt, _updatedAt) VALUES (${uid}, ${stringifyDocument(content)}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`;
   return uid;
 }
 
@@ -42,7 +42,7 @@ export async function updateDoc<T>(docRef: DocRef<T>, content: T) {
   const db = await docRef.collection.getDb();
 
   const { success } = await db.connector.sql`
-    UPDATE {${docRef.collection.name}} SET content = ${stringifyDocument(content)} WHERE _uid = ${docRef.uid}
+    UPDATE {${docRef.collection.name}} SET content = ${stringifyDocument(content)}, _updatedAt = CURRENT_TIMESTAMP WHERE _uid = ${docRef.uid}
   `;
 
   return success;
@@ -53,7 +53,7 @@ export async function getDocs<T>(
 ): Promise<DocumentData<T>[]> {
   const db = await collectionRef.getDb();
   const { rows } = await db.connector.sql`
-    SELECT _uid, content FROM {${collectionRef.name}}
+    SELECT _uid, content, _createdAt, _updatedAt FROM {${collectionRef.name}}
   `;
   if (!rows) {
     return [];
@@ -69,7 +69,7 @@ export async function getDoc<T>(
   const db = await collectionRef.getDb();
 
   const { rows } = await db.connector.sql`
-    SELECT _uid, content FROM {${collectionRef.name}} WHERE _uid = ${uid}
+    SELECT _uid, content, _createdAt, _updatedAt FROM {${collectionRef.name}} WHERE _uid = ${uid}
   `;
 
   if (!rows || !rows[0]) {

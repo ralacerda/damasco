@@ -1,8 +1,6 @@
 # Changelog
 
-
 ## v0.0.1
-
 
 ### 🚀 Enhancements
 
@@ -59,4 +57,3 @@
 ### ❤️ Contributors
 
 - Renato Lacerda <renato.ac.lacerda@gmail.com>
-

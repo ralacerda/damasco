@@ -1,5 +1,5 @@
 import { collection } from "../src/collection";
-import { addDoc, getDoc } from "../src/document";
+import { addDoc, doc, getDoc, updateDoc } from "../src/document";
 import { damasco } from "../src/index";
 
 type User = {
@@ -29,3 +29,16 @@ const john = await getDoc<User>(users, johnId);
 
 console.log(john);
 // console.log(data);
+
+if (!john) {
+  console.log("no john");
+  throw new Error("no john");
+}
+
+updateDoc<User>(doc(users, johnId), {
+  ...john,
+  name: "John Doe",
+});
+
+const john2 = await getDoc<User>(users, johnId);
+console.log(john2);
